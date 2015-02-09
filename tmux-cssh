@@ -288,7 +288,11 @@ for host in ${HOSTS[@]}; do
 
 	# First Call, inits the tmux-session
 	if [ "${initTmuxCall}" == "true" ]; then
-		tmux new-session -d -s "${TMUX_SESSION_NAME}" "${connectString}"
+    if [[ -n "${TMUX}" ]]; then
+      tmux -S "${TMUX%%,*}" switch-client -t "$(TMUX= tmux -S "${TMUX%%,*}" new-session -dP -s "${TMUX_SESSION_NAME}" "${connectString}")"
+    else
+		  tmux new-session -d -s "${TMUX_SESSION_NAME}" "${connectString}"
+    fi
 
     # If our initial ssh connection has failed, do not mark initTmuxCall as false since tmux will have aborted.
     # We'll need to try to start a new tmux session for the next host.
